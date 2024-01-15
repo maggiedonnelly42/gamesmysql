@@ -3,6 +3,11 @@ var app = express();
 var mysql = require('mysql');
 
 app.set('view engine', 'ejs');
+
+var bodyParser = require("body-parser") // call body parser module and make use of it
+
+app.use(bodyParser.urlencoded({extended:true}));
+
 app.use(express.static("style"))
 app.use(express.static("views"));
 app.use(express.static("images"));
@@ -33,7 +38,7 @@ db.connect((err) =>{
 app.get('/', function(req,res){
    
    
-    let sql = 'SELECT * FROM cars';
+    let sql = 'SELECT * FROM games';
     let query = db.query(sql, (err,result) => {
         if(err) throw err;
         console.log(result);
@@ -42,19 +47,26 @@ app.get('/', function(req,res){
    
 })
 
-
 app.get('/add', function(req,res){
-   
-   
-    let sql = 'insert into cars (make, model, price, image ) values( "Toyota", "supra", "150000", "supra.jpg")'
-    let query = db.query(sql, (err,result) => {
-        if(err) throw err;
-        console.log(result);
-        res.redirect( '/')
-    });
-   
+
+res.render('add')
+
 })
 
+
+
+
+
+app.post('/add', function(req,res){
+    let sql = 'insert into games ( title, price) values (?, ?)';
+    let query = db.query(sql,[req.body.name, req.body.price], (err,result) => {
+        if(err) throw err;
+        console.log(result);
+        res.redirect( '/')  
+    });
+     
+   
+})
 // **********************************  Code to here **************************
 
 app.listen(process.env.PORT || 3000, process.env.IP || "0.0.0.0" 
